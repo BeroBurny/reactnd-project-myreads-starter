@@ -8,26 +8,32 @@ if (!token) {
   token = localStorage.token = Math.random().toString(36).substr(-8);
 }
 
+export interface IBook {
+  authors: string[];
+  id: string;
+  imageLinks: { thumbnail: string };
+  title: string;
+  shelf: Shelf;
+}
+
+export type Shelf = 'currentlyReading' | 'wantToRead' | 'read' | 'none';
+
 const headers = {
   'Accept': 'application/json',
   'Authorization': token
 };
 
-export const get = (bookId: number) =>
+export const get = (bookId: string): Promise<IBook> =>
   fetch(`${api}/books/${bookId}`, { headers })
     .then(res => res.json())
     .then(data => data.book);
 
-export const getAll = () =>
+export const getAll = (): Promise<IBook[]> =>
   fetch(`${api}/books`, { headers })
     .then(res => res.json())
     .then(data => data.books);
 
-type Book = {
-  id: number;
-}
-
-export const update = (book: Book, shelf: string) =>
+export const update = (book: IBook, shelf: string) =>
   fetch(`${api}/books/${book.id}`, {
     method: 'PUT',
     headers: {
